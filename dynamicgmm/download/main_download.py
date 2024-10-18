@@ -110,6 +110,9 @@ class ORFEUSStrongMotionDownloader():
         # Get the events and stations from the webservice
         rrsm_downloader = RRSMEventStationWebService(self.config["RRSM"]["event"])
         rrsm_downloader.get_events_stations()
+        if rrsm_downloader.events_stations is None:
+            # Download failed - no content
+            return
         self.rrsm_catalogue = rrsm_downloader.events_stations
         # Get target directory
         by_station = self.config["RRSM"]["waveform"].get("by-station", False)

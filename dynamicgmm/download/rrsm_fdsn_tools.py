@@ -139,6 +139,9 @@ class RRSMEventStationWebService():
         """
         req = urllib.request.Request(self.url)
         raw_data = urllib.request.urlopen(req)
+        if raw_data.code == 204:
+            logging.info("No data in RRSM for query")
+            return
         # Extract the event data in json format
         data = json.load(raw_data)
         min_lon = self.config.get("minlongitude", -180.0)
