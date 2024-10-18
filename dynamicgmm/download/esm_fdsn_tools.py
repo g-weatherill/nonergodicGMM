@@ -5,6 +5,7 @@ Tools to access and download ESM data
 import os
 import logging
 import requests
+from requests.exceptions import HTTPError
 from copy import deepcopy
 from typing import Dict, Union
 import numpy as np
@@ -143,9 +144,20 @@ class ESMEventWebService():
         """
         """
         logging.info(f"Query URL: {self.url}")
-        catalogue = obspy.read_events(self.url, format="QUAKEML")
+        # Query the event webservice
+        try:
+            catalogue = obspy.read_events(self.url, format="QUAKEML")
+        except HTTPError as he:
+            # If a 204 HTTP Error is returned then there is no content
+            if str(he).startswith("204 HTTP Error: No Content for url"):
+                logging.info("Catalogue contains no events")
+                return
+            else:
+                # Something else is wrong, so raise the error!
+                raise
         if not len(catalogue):
-            raise ValueError("Catalogue contains no events")
+            logging.info("Catalogue contains no events")
+            return
         ev_times = []
         for ev in catalogue:
             ev_times.append(np.datetime64(ev.preferred_origin().time))
