@@ -173,12 +173,11 @@ class ASDFEventHandler():
                 start_time = np.datetime64(int((start_time_int - nanosec_diff) / 1E9), "s") +\
                     np.timedelta64(nanosec_diff, "ns")
                 timeseries = stn[rec][:]
-                # Now get auxilliary information 
+                # Now get auxilliary information
                 auxiliary_key = "AuxiliaryData/Headers/{:s}_{:s}/{:s}".format(network,
                                                                               station_code,
                                                                               rec_id)
                 units = fle[auxiliary_key].attrs["units"]
-                print(rec, stn_full, rate, str(start_time))
                 metadata = dict([(key, val) for key, val in fle[auxiliary_key].attrs.items()])
                 # If the response spectrum is present then add this too
                 if "Spectra" in list(fle["AuxiliaryData"]):
@@ -209,7 +208,6 @@ class ASDFEventHandler():
                                                                units=units,
                                                                metadata=metadata,
                                                                response_spectrum=spectrum)
-        print(waveforms)
         record = {}
         for locn, channels in waveforms.items():
             for channel, wfs in channels.items():
