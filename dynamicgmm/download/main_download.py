@@ -38,7 +38,7 @@ class ORFEUSStrongMotionDownloader():
         config: Config file as import from toml format
         output_directory: Output directory to store the waveforms
     """
-    def __init__(self, config: Dict):
+    def __init__(self, config: Dict, run_type: str = "wet"):
         """
         """
         self.config = deepcopy(config)
@@ -49,6 +49,9 @@ class ORFEUSStrongMotionDownloader():
         os.mkdir(self.output_directory)
         self.esm_catalogue = None
         self.rrsm_catalogue = None
+        assert run_type in ["wet", "damp", "dry"], \
+            "Run type must be one of 'wet', 'damp' or 'dry' (%s given)" % run_type
+        self.run_type = run_type
 
     def run(self):
         """
@@ -59,7 +62,8 @@ class ORFEUSStrongMotionDownloader():
             target_dir = os.path.join(self.output_directory,
                                       self.config["ESM"]["esm-output"])
             os.mkdir(target_dir)
-            self.run_esm_download(target_dir)
+            if self.run_type != "dry":
+                self.run_esm_download(target_dir)
         if "RRSM" in self.config:
             logging.info("Running the RRSM download process")
             target_dir = os.path.join(self.output_directory,
@@ -81,6 +85,8 @@ class ORFEUSStrongMotionDownloader():
         if not len(event_ws.event_ids):
             logging.info("No events found in ESM service")
             return
+        if self.run_type == "damp":
+            return
         for ev_id in event_ws.event_ids:
             # Download the waveforms for a specific event
             wf_config = deepcopy(self.config["ESM"]["waveform"])
@@ -91,7 +97,8 @@ class ORFEUSStrongMotionDownloader():
                 ev_id + ".{:s}".format(wf_config["format"])
             )
             wf_downloader = ESMWaveformWebService(wf_config, event_target_file)
-            wf_downloader.download_waveforms()
+            if self.run_type == "wet":
+                wf_downloader.download_waveforms()
         return
 
     def run_rrsm_download(self, target_dir: str):
@@ -109,5 +116,7 @@ class ORFEUSStrongMotionDownloader():
         wf_downloader = RRSMWaveformWebService(rrsm_downloader.events_stations,
                                                target_dir,
                                                by_station=by_station)
-        wf_downloader.download_waveforms()
+        rrsm_downloader.to_json(os.path.join(target_dir, "events_stations.json"))
+        if self.run_type == "wet":
+            wf_downloader.download_waveforms()
         return
