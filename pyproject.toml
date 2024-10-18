@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nonergodicGMM"
+version = "0.0.1"
+authors = [
+  { name="Graeme Weatherill", email="graeme.weatherill@gfz-potsdam.de" },
+]
+description = "A module for managing the development and updating of nonergodic GMMs"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "openquake.engine>=3.19",
+    "numexpr",
+    "Rtree",
+    "geopandas",
+    "obspy",
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: GPL-3.0 license",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+Homepage = "https://github.com/g-weatherill/nonergodicGMM"
+Issues = "https://github.com/g-weatherill/nonergodicGMM/issues"
+
+[tool.setuptools.packages.find]
+include = ["dynamicgmm"]
+exclude = ["notebooks"]
