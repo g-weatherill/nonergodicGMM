@@ -14,7 +14,8 @@ import pandas as pd
 from scipy.constants import g
 from obspy import read_events, read_inventory
 from dynamicgmm.process.base import (
-    ResponseSpectrum, FourierSpectrum, Waveform, Record, get_horizontal_spectrum
+    ResponseSpectrum, FourierSpectrum, Waveform, Record, get_horizontal_spectrum,
+    DEFAULT_PERIODS,
     )
 import dynamicgmm.process.intensity_measures as ims
 
@@ -54,7 +55,9 @@ class ASDFEventHandler():
         "filter_order": "filter_order",
         }
 
-    def __init__(self, fname: str):
+    def __init__(self, fname: str, calculate_response_spectrum: bool = True,
+                 periods: Optional[np.ndarray] = None,
+                 pseudo: bool = True):
         """
         """
         self.fname = fname
@@ -66,6 +69,9 @@ class ASDFEventHandler():
         fle.close()
         self.events_stations = self.get_events_stations()
         self.data = None
+        self.calculate_response_spectrum = calculate_response_spectrum
+        self.periods = periods if periods is not None else DEFAULT_PERIODS
+        self.pseudo = pseudo
 
     def parse_event_data(self, dstore):
         """Sorts the events into a dictionary
@@ -179,8 +185,10 @@ class ASDFEventHandler():
                                                                               rec_id)
                 units = fle[auxiliary_key].attrs["units"]
                 metadata = dict([(key, val) for key, val in fle[auxiliary_key].attrs.items()])
-                # If the response spectrum is present then add this too
-                if "Spectra" in list(fle["AuxiliaryData"]):
+
+                if (not self.calculate_response_spectrum) and \
+                        "Spectra" in list(fle["AuxiliaryData"]):
+                    # If the response spectrum is present then add this too
                     spectra_key = "AuxiliaryData/Spectra/{:s}_{:s}/{:s}".format(network,
                                                                                 station_code,
                                                                                 rec_id)
@@ -190,7 +198,15 @@ class ASDFEventHandler():
                                                 units=units,
                                                 damping=fle[spectra_key].attrs["damping"])
                 else:
-                    spectrum = None
+                    # Calculate the response spectrum directly from the time-series
+                    periods = self.periods if self.periods is not None else DEFAULT_PERIODS
+                    spectrum = ResponseSpectrum.from_timeseries(
+                        acceleration=timeseries,
+                        time_step=1.0 / rate,
+                        units=units,
+                        periods=periods,
+                        pseudo=self.pseudo)
+
                 _, _, locn, comp = tuple(stn_full.split("."))
                 component = comp[-1]
                 channel = comp[-3:-1]
@@ -226,8 +242,8 @@ class ASDFEventHandler():
         """
         records = {}
         for ev_id in self.events_stations:
-            for network in self.event_stations[ev_id]:
-                for station in self.event_stations[ev_id][network]:
+            for network in self.events_stations[ev_id]:
+                for station in self.events_stations[ev_id][network]:
                     ntw, station_code, locn, channel = tuple(station.split("."))
                     records["{:s}|{:s}".format(ev_id, station)] = self.get_record(
                         ev_id,
