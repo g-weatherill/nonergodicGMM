@@ -88,7 +88,7 @@ def plot_response_spectra(
         ylabel = "Sa (%s)" % record.response_spectrum.units
     elif record.__class__.__name__ == "ResponseSpectrum":
         # Just plot the response spectrum from a ResponseSpectrum object
-        ax.plot(record.periods, record.spectrum, "-", color="k", lw=lw)
+        ax.plot(record.periods, record.spectrum, "-", color=color_set[0], lw=lw)
         ylabel = "Sa (%s)" % record.units
     else:
         raise ValueError("Unknown type for record")

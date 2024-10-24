@@ -279,17 +279,15 @@ class KonnoOhmachi(BaseSpectralSmoother):
         Verify that "bandwidth" and "count" are both present and real positive.
         Adds the other defaults if not present
         """
-        params_keys = params.keys()
-        assert "bandwidth" in params_keys
-        assert "count" in params_keys
-        assert params["bandwidth"] > 0.0
-        assert params["count"] > 0
-        if not "enforce_no_matrix" in params_keys:
-            params["enforce_no_matrix"] = False
-        if not "max_memory_usage" in params_keys:
-            params["max_memory_usage"] = 512
-        if not "normalize" in params_keys:
-            params["normalize"] = False
+        # Check that the bandwidth is specified and that this is greater than 0
+        assert "bandwidth" in params, "Konno & Ohmachi method requires 'bandwidth'"
+        assert params["bandwidth"] > 0.0, "Konno & Ohmachi bandwidth must be positive"
+        # Verify the other parameters, adding defaults where not supplied
+        params["count"] = params.get("count", 1)
+        assert params["count"] > 0, "Count must be greater than 0"
+        params["enforce_no_matrix"] = params.get("enforce_no_matrix", False)
+        params["max_memory_usage"] = params.get("max_memory_usage", 512)
+        params["normalize"] = params.get("normalize", True)
         return params
 
     def apply_smoothing(self, spectra, frequencies):
