@@ -816,6 +816,31 @@ def get_cav(acceleration, time_step, threshold=0.0):
         return 0.0
 
 
+def get_cav_standard(acceleration, time_step, units):
+    """Returns the standard cumulative absolute velocity (CAV) as defined according
+    to Campbell & Bozorgnia (2012).
+
+    CAV_STD = \sum_{i = 1}^N \left( {H\left( {\left| {PGA_i} \right} - 0.025}\ right) \cdot
+    \int_{i-1}^i \left| {a \left( t \right)} \right| dt} \right)
+    
+    where N the number of non-overlapping  1 s time-intervals, |PGA_i| absolute PGA for the
+    i^th time interval.
+    """
+    acceleration_g = convert_accel_units(units, "g")
+    time = get_time_vector(time_step, acceleration_g.shape[0])
+    second = time.astype(int)
+    n_expected = int(1.0 / time_step)
+    cav_std = 0.0
+    for i in range(0, second[-1]):
+        accel_sel = acceleration_g[second == i]
+        if len(accel_sel) != n_expected:
+            # Not a full 1 second interval - skipping
+            continue
+        if np.max(np.fabs(accel_sel)) >= 0.025:
+            cav_std += np.trapz(accel_sel, dx=time_step)
+    return cav_std
+
+
 def get_arms(acceleration, time_step):
     """
     Returns the root mean square acceleration, defined as
@@ -924,7 +949,7 @@ def get_rotation_angles(transf_matrix, nhist):
         alpha3z = 0
 
     # Angle between axis x and the projection of axis 1 in the xy plane: theta
-    if nhist==3:
+    if nhist == 3:
         # v_x is a unitary vector in the direction of axis x.
         # v_1 is a unitary vector in the direction of axis 1,
         # then projected onto the xy plane by setting is z coordinate

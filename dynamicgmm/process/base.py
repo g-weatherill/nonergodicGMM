@@ -12,85 +12,84 @@ from dynamicgmm.process.sm_utils import convert_accel_units
 
 # Default period set is based on those provied by ESM
 DEFAULT_PERIODS = np.array(
-    [ 0.01 ,  0.02 ,  0.022,  0.025,  0.029,  0.03 ,  0.032,  0.035,
-      0.036,  0.04 ,  0.042,  0.044,  0.045,  0.046,  0.048,  0.05 ,
-      0.055,  0.06 ,  0.065,  0.067,  0.07 ,  0.075,  0.08 ,  0.085,
-      0.09 ,  0.095,  0.1  ,  0.11 ,  0.12 ,  0.13 ,  0.133,  0.14 ,
-      0.15 ,  0.16 ,  0.17 ,  0.18 ,  0.19 ,  0.2  ,  0.22 ,  0.24 ,
-      0.25 ,  0.26 ,  0.28 ,  0.29 ,  0.3  ,  0.32 ,  0.34 ,  0.35 ,
-      0.36 ,  0.38 ,  0.4  ,  0.42 ,  0.44 ,  0.45 ,  0.46 ,  0.48 ,
-      0.5  ,  0.55 ,  0.6  ,  0.65 ,  0.667,  0.7  ,  0.75 ,  0.8  ,
-      0.85 ,  0.9  ,  0.95 ,  1.   ,  1.1  ,  1.2  ,  1.3  ,  1.4  ,
-      1.5  ,  1.6  ,  1.7  ,  1.8  ,  1.9  ,  2.   ,  2.2  ,  2.4  ,
-      2.5  ,  2.6  ,  2.8  ,  3.   ,  3.2  ,  3.4  ,  3.5  ,  3.6  ,
-      3.8  ,  4.   ,  4.2  ,  4.4  ,  4.6  ,  4.8  ,  5.   ,  5.5  ,
-      6.   ,  6.5  ,  7.   ,  7.5  ,  8.   ,  8.5  ,  9.   ,  9.5  ,
-      10.0])
+    [0.01, 0.02, 0.022, 0.025, 0.029, 0.03, 0.032, 0.035,
+     0.036, 0.04, 0.042, 0.044, 0.045, 0.046, 0.048, 0.05,
+     0.055, 0.06, 0.065, 0.067, 0.07, 0.075, 0.08, 0.085,
+     0.09, 0.095, 0.1, 0.11, 0.12, 0.13, 0.133, 0.14,
+     0.15, 0.16, 0.17, 0.18, 0.19, 0.2, 0.22, 0.24,
+     0.25, 0.26, 0.28, 0.29, 0.3, 0.32, 0.34, 0.35,
+     0.36, 0.38, 0.4, 0.42, 0.44, 0.45, 0.46, 0.48,
+     0.5, 0.55, 0.6, 0.65, 0.667, 0.7, 0.75, 0.8,
+     0.85, 0.9, 0.95, 1.0, 1.1, 1.2, 1.3, 1.4,
+     1.5, 1.6, 1.7, 1.8, 1.9, 2.0, 2.2, 2.4,
+     2.5, 2.6, 2.8, 3.0, 3.2, 3.4, 3.5, 3.6,
+     3.8, 4.0, 4.2, 4.4, 4.6, 4.8, 5.0, 5.5,
+     6.0, 6.5, 7.0, 7.5, 8.0, 8.5, 9.0, 9.5, 10.0])
 
 
 # DEFAULT FREQUENCIES TAKEN FROM BAYLESS & ABRAHAMSON (2019)
 DEFAULT_FREQUENCIES = np.array(
-[ 0.1     ,   0.102329,   0.104713,   0.107152,   0.109648,
-  0.112202,   0.114815,   0.11749 ,   0.120226,   0.123027,
-  0.125893,   0.128825,   0.131826,   0.134896,   0.138038,
-  0.141254,   0.144544,   0.147911,   0.151356,   0.154882,
-  0.158489,   0.162181,   0.165959,   0.169824,   0.17378 ,
-  0.177828,   0.18197 ,   0.186209,   0.190546,   0.194984,
-  0.199526,   0.204174,   0.20893 ,   0.213796,   0.218776,
-  0.223872,   0.229087,   0.234423,   0.239883,   0.245471,
-  0.251189,   0.25704 ,   0.263027,   0.269153,   0.275423,
-  0.281838,   0.288403,   0.295121,   0.301995,   0.30903 ,
-  0.316228,   0.323594,   0.331131,   0.338844,   0.346737,
-  0.354813,   0.363078,   0.371535,   0.380189,   0.389045,
-  0.398107,   0.40738 ,   0.416869,   0.42658 ,   0.436516,
-  0.446684,   0.457088,   0.467735,   0.47863 ,   0.489779,
-  0.501187,   0.512861,   0.524807,   0.537032,   0.549541,
-  0.562341,   0.57544 ,   0.588844,   0.60256 ,   0.616595,
-  0.630957,   0.645654,   0.660693,   0.676083,   0.691831,
-  0.707946,   0.724436,   0.74131 ,   0.758578,   0.776247,
-  0.794328,   0.81283 ,   0.831764,   0.851138,   0.870964,
-  0.891251,   0.912011,   0.933254,   0.954992,   0.977237,
-  1.      ,   1.023293,   1.047129,   1.071519,   1.096478,
-  1.122018,   1.148153,   1.174897,   1.202264,   1.230269,
-  1.258926,   1.28825 ,   1.318257,   1.348963,   1.380384,
-  1.412537,   1.44544 ,   1.479108,   1.513561,   1.548816,
-  1.584893,   1.62181 ,   1.659587,   1.698244,   1.737801,
-  1.778279,   1.819701,   1.862087,   1.905461,   1.949844,
-  1.995262,   2.041738,   2.089296,   2.137962,   2.187761,
-  2.238721,   2.290868,   2.344229,   2.398833,   2.454709,
-  2.511886,   2.570396,   2.630268,   2.691535,   2.754228,
-  2.818383,   2.884031,   2.951209,   3.019952,   3.090296,
-  3.162278,   3.235937,   3.311311,   3.388441,   3.467368,
-  3.548134,   3.63078 ,   3.715352,   3.801893,   3.890451,
-  3.981071,   4.073803,   4.168694,   4.265795,   4.365158,
-  4.466835,   4.570881,   4.677351,   4.7863  ,   4.897787,
-  5.011872,   5.128613,   5.248074,   5.370318,   5.495409,
-  5.623413,   5.754399,   5.888436,   6.025596,   6.165949,
-  6.309573,   6.456542,   6.606934,   6.760828,   6.918308,
-  7.079456,   7.24436 ,   7.413103,   7.585776,   7.762471,
-  7.943282,   8.128304,   8.317636,   8.511379,   8.709635,
-  8.912507,   9.120107,   9.332541,   9.549923,   9.772372,
- 10.      ,  10.23293 ,  10.471284,  10.715192,  10.96478 ,
- 11.220183,  11.481534,  11.748973,  12.022642,  12.302684,
- 12.589251,  12.882492,  13.182563,  13.489624,  13.80384 ,
- 14.12537 ,  14.454392,  14.79108 ,  15.135614,  15.48817 ,
- 15.848933,  16.218101,  16.59587 ,  16.98244 ,  17.37801 ,
- 17.782793,  18.19701 ,  18.62087 ,  19.05461 ,  19.498443,
- 19.952621,  20.41738 ,  20.89296 ,  21.37962 ,  21.877611,
- 22.38721 ,  22.908672,  23.442283,  23.988321,  24.54708 ,
- 25.11886 ,  25.70395 ,  26.30267 ,  26.91534 ,  27.542291,
- 28.183832,  28.84032 ,  29.512094,  30.19952 ,  30.902954,
- 31.62278 ,  32.359363,  33.11311 ,  33.884414,  34.673683,
- 35.481334,  36.3078  ,  37.153514,  38.018932,  38.90451 ,
- 39.81071 ,  40.73802 ,  41.68693 ,  42.65794 ,  43.65157 ,
- 44.668342,  45.70881 ,  46.7735  ,  47.862991,  48.97789 ,
- 50.11873 ,  51.286144,  52.480751,  53.703182,  54.95409 ,
- 56.23413 ,  57.543991,  58.884361,  60.255954,  61.6595  ,
- 63.09573 ,  64.565414,  66.06933 ,  67.608283,  69.183082,
- 70.79456 ,  72.443572,  74.131004,  75.857734,  77.62469 ,
- 79.432792,  81.28303 ,  83.17635 ,  85.11377 ,  87.096321,
- 89.1251  ,  91.2011  ,  93.32544 ,  95.49926 ,  97.723724,
- 100.])
+    [0.100000,  0.102329,  0.104713,  0.107152,  0.109648,
+     0.112202,  0.114815,  0.117490,  0.120226,  0.123027,
+     0.125893,  0.128825,  0.131826,  0.134896,  0.138038,
+     0.141254,  0.144544,  0.147911,  0.151356,  0.154882,
+     0.158489,  0.162181,  0.165959,  0.169824,  0.173780,
+     0.177828,  0.181970,  0.186209,  0.190546,  0.194984,
+     0.199526,  0.204174,  0.208930,  0.213796,  0.218776,
+     0.223872,  0.229087,  0.234423,  0.239883,  0.245471,
+     0.251189,  0.257040,  0.263027,  0.269153,  0.275423,
+     0.281838,  0.288403,  0.295121,  0.301995,  0.309030,
+     0.316228,  0.323594,  0.331131,  0.338844,  0.346737,
+     0.354813,  0.363078,  0.371535,  0.380189,  0.389045,
+     0.398107,  0.407380,  0.416869,  0.426580,  0.436516,
+     0.446684,  0.457088,  0.467735,  0.478630,  0.489779,
+     0.501187,  0.512861,  0.524807,  0.537032,  0.549541,
+     0.562341,  0.575440,  0.588844,  0.602560,  0.616595,
+     0.630957,  0.645654,  0.660693,  0.676083,  0.691831,
+     0.707946,  0.724436,  0.741310,  0.758578,  0.776247,
+     0.794328,  0.812830,  0.831764,  0.851138,  0.870964,
+     0.891251,  0.912011,  0.933254,  0.954992,  0.977237,
+     1.000000,  1.023293,  1.047129,  1.071519,  1.096478,
+     1.122018,  1.148153,  1.174897,  1.202264,  1.230269,
+     1.258926,  1.288250,  1.318257,  1.348963,  1.380384,
+     1.412537,  1.445440,  1.479108,  1.513561,  1.548816,
+     1.584893,  1.621810,  1.659587,  1.698244,  1.737801,
+     1.778279,  1.819701,  1.862087,  1.905461,  1.949844,
+     1.995262,  2.041738,  2.089296,  2.137962,  2.187761,
+     2.238721,  2.290868,  2.344229,  2.398833,  2.454709,
+     2.511886,  2.570396,  2.630268,  2.691535,  2.754228,
+     2.818383,  2.884031,  2.951209,  3.019952,  3.090296,
+     3.162278,  3.235937,  3.311311,  3.388441,  3.467368,
+     3.548134,  3.630780,  3.715352,  3.801893,  3.890451,
+     3.981071,  4.073803,  4.168694,  4.265795,  4.365158,
+     4.466835,  4.570881,  4.677351,  4.786300,  4.897787,
+     5.011872,  5.128613,  5.248074,  5.370318,  5.495409,
+     5.623413,  5.754399,  5.888436,  6.025596,  6.165949,
+     6.309573,  6.456542,  6.606934,  6.760828,  6.918308,
+     7.079456,  7.244360,  7.413103,  7.585776,  7.762471,
+     7.943282,  8.128304,  8.317636,  8.511379,  8.709635,
+     8.912507,  9.120107,  9.332541,  9.549923,  9.772372,
+     10.000000, 10.232930, 10.471284, 10.715192, 10.964780,
+     11.220183, 11.481534, 11.748973, 12.022642, 12.302684,
+     12.589251, 12.882492, 13.182563, 13.489624, 13.803840,
+     14.125370, 14.454392, 14.791080, 15.135614, 15.488170,
+     15.848933, 16.218101, 16.595870, 16.982440, 17.378010,
+     17.782793, 18.197010, 18.620870, 19.054610, 19.498443,
+     19.952621, 20.417380, 20.892960, 21.379620, 21.877611,
+     22.387210, 22.908672, 23.442283, 23.988321, 24.547080,
+     25.118860, 25.703950, 26.302670, 26.915340, 27.542291,
+     28.183832, 28.840320, 29.512094, 30.199520, 30.902954,
+     31.622780, 32.359363, 33.113110, 33.884414, 34.673683,
+     35.481334, 36.307800, 37.153514, 38.018932, 38.904510,
+     39.810710, 40.738020, 41.686930, 42.657940, 43.651570,
+     44.668342, 45.708810, 46.773500, 47.862991, 48.977890,
+     50.118730, 51.286144, 52.480751, 53.703182, 54.954090,
+     56.234130, 57.543991, 58.884361, 60.255954, 61.659500,
+     63.095730, 64.565414, 66.069330, 67.608283, 69.183082,
+     70.794560, 72.443572, 74.131004, 75.857734, 77.624690,
+     79.432792, 81.283030, 83.176350, 85.113770, 87.096321,
+     89.125100, 91.201100, 93.325440, 95.499260, 97.723724,
+     100.])
 
 
 class ResponseSpectrum():
@@ -332,6 +331,32 @@ class Waveform():
         """
         return np.max(np.fabs(self.displacement))
 
+    def get_arias_intensity(self, limits: Optional[Tuple] = (0.0, 1.0)):
+        """Returns the Arias intensity of the trace with respect to a given fraction of the
+        total duration of the record (defined by the start point and end point in the limits)
+        e.g. 5 - 95 % Arias would set limits to (0.05, 0.95)
+        """
+        start_level, end_level = limits
+        end_level = min(end_level, 1.0)
+        start_level = max(start_level, 0.0)
+        assert end_level > start_level
+        return ims.get_arias_intensity(self.acceleration, self.dt, start_level, end_level)
+
+    def get_significant_duration(self, limits: Tuple):
+        """Returns the significant duration of the record between the start and end limit
+        percent of Arias intensity
+        """
+        start_level, end_level = limits
+        end_level = min(end_level, 1.0)
+        start_level = max(start_level, 0.0)
+        assert end_level > start_level
+        return ims.get_significant_duration(self.acceleration, self.dt, start_level, end_level)
+
+    def get_cav(self, threshold: float = 0.0):
+        """Returns the cumulative absolute velocity above a threshold acceleration
+        """
+        return ims.get_cav(self.acceleration, self.dt, max(threshold, 0.0))
+
     def get_response_spectrum(
             self,
             periods: np.ndarray,
@@ -373,6 +398,16 @@ class Waveform():
             frequencies,
             konno_ohmachi_kwargs)
         return self.fourier_spectrum
+
+
+# Methods to resolve two component
+RESOLVE = {
+    "geometric": lambda x, y: np.sqrt(x * y),
+    "maximum": lambda x, y: max(x, y),
+    "arithmetic": lambda x, y: 0.5 * (x + y),
+    "difference": lambda x, y: np.fabs(x - y),
+    "vectorial": lambda x, y: np.sqrt(x ** 2.0 + y ** 2.0),
+    }
 
 
 class Record():
@@ -561,71 +596,180 @@ class Record():
                              self.h2.fourier_spectrum.spectrum ** 2.0))
         return {"frequency": self.h1.fourier_spectrum.frequency, "EAS": eas}
 
+    def get_arias_intensity(
+            self,
+            limits: Optional[Tuple] = (0.0, 1.0),
+            resolve: str = "geometric"
+    ) -> float:
+        """Returns the resolved Arias intensity from the two horizontal components
+        """
+        arias_1 = self.h1.get_arias_intensity(limits)
+        arias_2 = self.h2.get_arias_intensity(limits)
+        return RESOLVE[resolve](arias_1, arias_2)
 
-def get_horizontal_spectrum(
-        waveform1: Waveform,
-        waveform2: Waveform,
-        periods: np.ndarray,
-        horizontal_component: str,
-        damping: float = 0.05,
-        units: str = "cm/s/s",
-        method: str = 'Nigam-Jennings'
-        ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
-    """
-    """
-    if horizontal_component.startswith("RotD"):
-        # Get the RotD spectrum
-        percentile = float(horizontal_component.replace("RotD", ""))
-        sa_rotdpp = ims.rotdpp_parallel(
-            waveform1.acceleration, waveform1.dt,
-            waveform2.acceleration, waveform2.dt,
-            periods, percentile, damping, units, method)
-        return sa_rotdpp["Pseudo-Acceleration"], sa_rotdpp["PGA"], sa_rotdpp["PGV"], \
-            sa_rotdpp["PGD"], periods
+    def get_significant_duration(self, limits: Tuple, resolve: str = "geometric") -> float:
+        """Returns the resolved significant duration from the two horizontal components
+        """
+        sig_1 = self.h1.get_significant_duration(limits)
+        sig_2 = self.h2.get_significant_duration(limits)
+        return RESOLVE[resolve](sig_1, sig_2)
 
-    if waveform1.response_spectrum and\
-            (len(periods) == len(waveform1.response_spectrum.periods))\
-            and np.allclose(periods, waveform1.response_spectrum.periods):
-        # Sa calculated for the same requested periods
-        sax = {"Pseudo-Acceleration": waveform1.response_spectrum.spectrum,
-               "PGA": waveform1.PGA, "PGV": waveform1.PGV, "PGD": waveform1.PGD}
+    def get_cav(self, threshold: float = 0.0, resolve: str = "geometric") -> float:
+        """Returns the resolved cumulative absolute velocity (CAV) from the two horizontal
+        components
+        """
+        cav_1 = self.h1.get_cav(threshold)
+        cav_2 = self.h2.get_cav(threshold)
+        return RESOLVE[resolve](cav_1, cav_2)
+
+
+# Names of valid response spectra horizontal definitions
+RESP_IMS = ("geometric", "envelope", "larger pga", "random")
+
+
+def get_im_set_from_record(
+    record: Record,
+    intensity_measures: Dict,
+    periods: Optional[np.ndarray] = None,
+    frequencies: Optional[np.ndarray] = None,
+    response_spectrum_units: Optional[str] = "cm/s/s",
+    fas_units: Optional[str] = "cm/s/s",
+    significant_duration_definition: Optional[Tuple] = (0.05, 0.95),
+    cav_threshold: Optional[float] = 0.0,
+    damping: Optional[float] = 0.05,
+    num_proc: Optional[int] = None
+) -> Dict:
+    """
+    For a given record retrieve the required set of horizontal intensity measures including
+    response spectra, EAS, and scalar IMs.
+
+    Args:
+        record: Ground Motion record
+        intensity_measures: Required intensity measures as a Dictionary with the IM name as
+                            the key and any configuration parameters as the entry
+        periods: Required periods for response spectra
+        frequencies: Required frequencies for the EAS
+        response_spectrum_units: Required units for the response spectrum
+        fas_units: Required units for the Fourier spectrum IMs (e.g. EAS)
+        significant_duration_definition: Tuple indicating the fraction of the Arias intensity
+                                         to take to measure the significant duration
+        cav_threshold: Threshold acceleration to take for common CAV
+        damping: Fractional damping for the response spectrum
+        num_proc: Number of processors to use for the parallelised RotDXX calculations
+
+    Returns:
+        im_set: Dictionary of intensity measures for the record
+    """
+    im_set = {}
+    if periods is None:
+        periods = DEFAULT_PERIODS
+    if frequencies is None:
+        frequencies = DEFAULT_FREQUENCIES
+    # Sort out those IMs relevant to response spectra and FAS
+    resp_spec_ims = []
+    fas_ims = []
+    for i_m in intensity_measures:
+        if i_m in RESP_IMS or i_m.lower().startswith("rotd"):
+            resp_spec_ims.append(i_m)
+        elif i_m.upper().startswith("EAS"):
+            fas_ims.append(i_m)
+    # If any response spectra measures are defined then begin with these
+    if len(resp_spec_ims):
+        im_set = record.get_horizontal_acceleration_spectrum(
+            resp_spec_ims,
+            periods,
+            damping=damping,
+            output_units=response_spectrum_units,
+            num_proc=num_proc)
     else:
-        # Calculate the response spectrum for the requested periods
-        sax = ims.get_response_spectrum(waveform1.acceleration,
-                                        waveform1.dt,
-                                        periods,
-                                        damping, units, method)[0]
-    if waveform2.response_spectrum and\
-            (len(periods) == len(waveform2.response_spectrum.periods))\
-            and np.allclose(periods, waveform2.response_spectrum.periods):
-        # Sa calculated for the same requested periods
-        say = {"Pseudo-Acceleration": waveform2.response_spectrum.spectrum,
-               "PGA": waveform2.PGA, "PGV": waveform2.PGV, "PGD": waveform2.PGD}
-    else:
-        # Calculate the response spectrum for the requested periods
-        say = ims.get_response_spectrum(waveform2.acceleration,
-                                        waveform2.dt,
-                                        periods,
-                                        damping, units, method)[0]
-    sa_horiz = {}
-    for i_m in list(sax):
-        if horizontal_component == "geometric":
-            sa_horiz[i_m] = np.sqrt(sax[i_m] * say[i_m])
-        elif horizontal_component == "envelope":
-            if i_m in ("PGA", "PGV", "PGD"):
-                sa_horiz[i_m] = max(sax[i_m], say[i_m])
-            else:
-                sa_horiz[i_m] = np.max(np.column_stack([sax[i_m], say[i_m]]), axis=1)
-        elif horizontal_component == "larger_pga":
-            if sax["PGA"] >= say["PGA"]:
-                sa_horiz[i_m] = sax[i_m]
-            else:
-                sa_horiz[i_m] = say[i_m]
-        elif horizontal_component == "arithmetic":
-            sa_horiz[i_m] = (sax[i_m] + say[i_m]) / 2.0
-        elif horizontal_component == "vectorial":
-            sa_horiz[i_m] = np.sqrt(sax[i_m] ** 2.0 + say[i_m] ** 2.0)
+        im_set = {}
+    # Get any Fourier spectrum measures (including EAS)
+    if len(fas_ims):
+        im_set["frequencies"] = frequencies
+    for fas_im in fas_ims:
+        fas_config = intensity_measures[fas_im]
+        if not fas_config:
+            fas_config = None
+        im_set[fas_im] = record.get_effective_amplitude_spectrum(frequencies,
+                                                                 fas_config)
+
+    # Any other IMS
+    for i_m, im_options in intensity_measures.items():
+        if i_m.lower().startswith("arias_intensity"):
+            im_set[i_m] = record.get_arias_intensity(**im_options)
+        elif i_m.upper() == "CAV":
+            im_set[i_m] = record.get_cav(**im_options)
+        elif i_m.lower().startswith("significant_duration"):
+            im_set[i_m] = record.get_significant_duration(**im_options)
         else:
-            raise ValueError("Horizontal component %s not recognised" % horizontal_component)
-    return sa_horiz["Pseudo-Acceleration"], sa_horiz["PGA"], sa_horiz["PGV"], \
-        sa_horiz["PGD"], periods
+            pass
+    return im_set
+
+
+# def get_horizontal_spectrum(
+#         waveform1: Waveform,
+#         waveform2: Waveform,
+#         periods: np.ndarray,
+#         horizontal_component: str,
+#         damping: float = 0.05,
+#         units: str = "cm/s/s",
+#         method: str = 'Nigam-Jennings'
+#         ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+#     """
+#     """
+#     if horizontal_component.startswith("RotD"):
+#         # Get the RotD spectrum
+#         percentile = float(horizontal_component.replace("RotD", ""))
+#         sa_rotdpp = ims.rotdpp_parallel(
+#             waveform1.acceleration, waveform1.dt,
+#             waveform2.acceleration, waveform2.dt,
+#             periods, percentile, damping, units, method)
+#         return sa_rotdpp["Pseudo-Acceleration"], sa_rotdpp["PGA"], sa_rotdpp["PGV"], \
+#             sa_rotdpp["PGD"], periods
+#
+#     if waveform1.response_spectrum and\
+#             (len(periods) == len(waveform1.response_spectrum.periods))\
+#             and np.allclose(periods, waveform1.response_spectrum.periods):
+#         # Sa calculated for the same requested periods
+#         sax = {"Pseudo-Acceleration": waveform1.response_spectrum.spectrum,
+#                "PGA": waveform1.PGA, "PGV": waveform1.PGV, "PGD": waveform1.PGD}
+#     else:
+#         # Calculate the response spectrum for the requested periods
+#         sax = ims.get_response_spectrum(waveform1.acceleration,
+#                                         waveform1.dt,
+#                                         periods,
+#                                         damping, units, method)[0]
+#     if waveform2.response_spectrum and\
+#             (len(periods) == len(waveform2.response_spectrum.periods))\
+#             and np.allclose(periods, waveform2.response_spectrum.periods):
+#         # Sa calculated for the same requested periods
+#         say = {"Pseudo-Acceleration": waveform2.response_spectrum.spectrum,
+#                "PGA": waveform2.PGA, "PGV": waveform2.PGV, "PGD": waveform2.PGD}
+#     else:
+#         # Calculate the response spectrum for the requested periods
+#         say = ims.get_response_spectrum(waveform2.acceleration,
+#                                         waveform2.dt,
+#                                         periods,
+#                                         damping, units, method)[0]
+#     sa_horiz = {}
+#     for i_m in list(sax):
+#         if horizontal_component == "geometric":
+#             sa_horiz[i_m] = np.sqrt(sax[i_m] * say[i_m])
+#         elif horizontal_component == "envelope":
+#             if i_m in ("PGA", "PGV", "PGD"):
+#                 sa_horiz[i_m] = max(sax[i_m], say[i_m])
+#             else:
+#                 sa_horiz[i_m] = np.max(np.column_stack([sax[i_m], say[i_m]]), axis=1)
+#         elif horizontal_component == "larger_pga":
+#             if sax["PGA"] >= say["PGA"]:
+#                 sa_horiz[i_m] = sax[i_m]
+#             else:
+#                 sa_horiz[i_m] = say[i_m]
+#         elif horizontal_component == "arithmetic":
+#             sa_horiz[i_m] = (sax[i_m] + say[i_m]) / 2.0
+#         elif horizontal_component == "vectorial":
+#             sa_horiz[i_m] = np.sqrt(sax[i_m] ** 2.0 + say[i_m] ** 2.0)
+#         else:
+#             raise ValueError("Horizontal component %s not recognised" % horizontal_component)
+#     return sa_horiz["Pseudo-Acceleration"], sa_horiz["PGA"], sa_horiz["PGV"], \
+#         sa_horiz["PGD"], periods

@@ -14,7 +14,7 @@ import pandas as pd
 from scipy.constants import g
 from obspy import read_events, read_inventory
 from dynamicgmm.process.base import (
-    ResponseSpectrum, FourierSpectrum, Waveform, Record, get_horizontal_spectrum,
+    ResponseSpectrum, FourierSpectrum, Waveform, Record, # get_horizontal_spectrum,
     DEFAULT_PERIODS,
     )
 import dynamicgmm.process.intensity_measures as ims
@@ -39,28 +39,30 @@ class ASDFEventHandler():
         "epicentral_distance_km": "repi",
         "hypocentral_distance_km": "rhypo",
         "fault_distance_km": "rrup",
-        "hw_xx_distance": "rx",
-        "hw_yy_distance": "ry0",
+        "hw_xx_distance_km": "rx",
+        "hw_yy_distance_km": "ry0",
         "focal_mechanism": "focal_mechanism",
         "network": "network",
-        "vs30": "vs30_m_s",
-        "vs30_geology": "vs30_m_s_from_geology",
-        "vs30_topo": "vs30_m_s_from_topography",
-        "vs30_profile": "vs30_m_s_from_vs_profile",
+        "vs30_m_s": "vs30",
+        "vs30_m_s_from_geology": "vs30_geology",
+        "vs30_m_s_from_topography": "vs30_topography",
+        "vs30_m_s_from_vs_profile": "vs30_vs_profile",
         "station_code": "station_code",
         "station_name": "station_name",
-        "low_cut_freq": "low_cut_frequency_hz",
-        "high_cut_freq": "high_cut_frequency_hz",
+        "low_cut_frequency_hz": "low_cut_freq",
+        "high_cut_frequency_hz": "high_cut_freq",
         "filter_type": "filter_type",
         "filter_order": "filter_order",
         }
 
     def __init__(self, fname: str, calculate_response_spectrum: bool = True,
                  periods: Optional[np.ndarray] = None,
-                 pseudo: bool = True):
+                 pseudo: bool = True,
+                 verbose: bool = True):
         """
         """
         self.fname = fname
+        self.verbose = verbose
         fle = h5py.File(self.fname, "r")
         self.events = {}
         self.parse_event_data(fle)
@@ -78,7 +80,8 @@ class ASDFEventHandler():
         """
         with io.BytesIO(dstore["QuakeML"][:].tobytes().strip()) as buf:
             catalog = read_events(buf, format="quakeml")
-        logging.info("%g events in file" % len(catalog))
+        if self.verbose:
+            logging.info("%g events in file" % len(catalog))
         for eq in catalog:
             event_id = eq.resource_id.id.split("event_id=")[1]
             if event_id not in self.events:
@@ -257,61 +260,11 @@ class ASDFEventHandler():
         and the corresponding record
         """
         for ev_id in self.events_stations:
-            for network in self.event_stations[ev_id]:
-                for station in self.event_stations[ev_id][network]:
+            for network in self.events_stations[ev_id]:
+                for station in self.events_stations[ev_id][network]:
                     ntw, station_code, locn, channel = tuple(station.split("."))
                     yield ev_id, station, self.get_record(ev_id, network, station_code)
         return
-
-#    def get_record(self, event_id: str, network: str, station_code: str):
-#        """
-#        """
-#        if event_id not in self.events:
-#            raise ValueError("No event with ID %s" % event_id)
-#        net_sta = "{:s}.{:s}".format(network, station_code)
-#        if net_sta not in self.stations:
-#            raise ValueError("No entry for station %s" % net_sta)
-#        # Get the event information
-#        event = self.events[event_id]
-#        station = self.stations[net_sta]
-#        # Get the waveform
-#        fle = h5py.File(self.fname)
-#        stn = fle["Waveforms/{:s}".format(net_sta)]
-#        waveforms = {}
-#        for rec in list(stn):
-#            if rec == "StationXML":
-#                # Skip the station xml
-#                continue
-#            if stn[rec].attrs["event_id"].decode() == event.resource_id.id:
-#                # Ground motion file for this event
-#                stn_comp, start_time, end_time, rec_id = tuple(rec.split("__"))
-#                # Waveform properties
-#                rate = stn[rec].attrs["sampling_rate"]
-#                #start_time = stn[rec].attrs["starttime"]
-#                timeseries = stn[rec][:]
-#                # Headers
-#                auxiliary_key = "AuxiliaryData/Headers/{:s}_{:s}/{:s}".format(network,
-#                                                                              station_code,
-#                                                                              rec_id)
-#                metadata = dict([(key, val) for key, val in fle[auxiliary_key].attrs.items()])
-#                component = metadata["stream"]
-#                # Spectral
-#                if "Spectra" in list(fle["AuxiliaryData"]):
-#                    spectra_key = "AuxiliaryData/Spectra/{:s}_{:s}/{:s}".format(network,
-#                                                                                station_code,
-#                                                                                rec_id)
-#
-#                    spectrum = ResponseSpectrum(fle[spectra_key][1, :],
-#                                                fle[spectra_key][0, :],
-#                                                metadata["units"],
-#                                                fle[spectra_key].attrs["damping"])
-#                else:
-#                    spectrum = None
-#                waveforms[component] = Waveform(
-#                    component, event_id, station_code, timeseries,
-#                    rate, np.datetime64(start_time), metadata, spectrum)
-#        fle.close()
-#        return waveforms, event, station
 
     @staticmethod
     def get_preferred_magnitude(event):
