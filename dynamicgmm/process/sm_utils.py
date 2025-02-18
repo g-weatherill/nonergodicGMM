@@ -131,7 +131,6 @@ def convert_accel_units(acceleration, from_, to_='cm/s/s'):  # noqa
     """
     m_sec_square = ("m/s/s", "m/s**2", "m/s^2")
     cm_sec_square = ("cm/s/s", "cm/s**2", "cm/s^2")
-    acceleration = np.asarray(acceleration)
     if from_ == 'g':
         if to_ == 'g':
             return acceleration
