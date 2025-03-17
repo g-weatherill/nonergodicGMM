@@ -377,7 +377,7 @@ class Waveform():
             # The required response spectrum is already an attribute of the object
             return self.response_spectrum
         self.response_spectrum = ResponseSpectrum.from_timeseries(
-            self.acceleration, self.d_t, periods, damping, self.units, pseudo)
+            self.acceleration, self.dt, self.units, damping, periods, pseudo)
         return self.response_spectrum
 
     def get_fourier_spectrum(

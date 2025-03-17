@@ -227,6 +227,7 @@ class DatastoreByEvent():
             pref_origin = handler.events[event_id].preferred_origin()
             pref_mag = handler.events[event_id].preferred_magnitude()
             event_metadata = {
+                "event_id": event_id,
                 "event_time": str(pref_origin.time),
                 "event_longitude": pref_origin.longitude,
                 "event_latitude":  pref_origin.latitude,

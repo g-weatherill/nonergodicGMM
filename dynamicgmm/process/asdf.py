@@ -187,6 +187,7 @@ class ASDFEventHandler():
                                                                               station_code,
                                                                               rec_id)
                 units = fle[auxiliary_key].attrs["units"]
+                # Add the metadata
                 metadata = dict([(key, val) for key, val in fle[auxiliary_key].attrs.items()])
 
                 if (not self.calculate_response_spectrum) and \
